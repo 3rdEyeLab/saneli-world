@@ -8,7 +8,6 @@ export default function SuccessPage() {
           src="/mainpagelogo.png"
           alt="SANELi"
           className="h-16 w-auto object-contain mx-auto mb-8"
-          onError={() => {}}
         />
 
         <div className="w-12 h-12 rounded-full bg-charcoal flex items-center justify-center mx-auto mb-6">
