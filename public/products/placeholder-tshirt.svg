@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#F4F4F4"/>
+  <path
+    d="M135 80 L60 170 L150 192 L150 390 L350 390 L350 192 L440 170 L365 80
+       C340 110 300 128 250 128 C200 128 160 110 135 80Z"
+    fill="#E0E0E0"
+    stroke="#D0D0D0"
+    stroke-width="2"
+  />
+  <text x="250" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#BBBBBB" letter-spacing="3">IMAGE PLACEHOLDER</text>
+  <text x="250" y="462" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#CCCCCC">Add to /public/products/</text>
+</svg>
