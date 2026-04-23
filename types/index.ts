@@ -9,7 +9,7 @@ export interface Product {
   description: string;
   price: number;
   category: 'tshirt' | 'vinyl';
-  image_url: string;
+  image_url?: string;
   badge?: string;
   active?: boolean;
   stock?: number;           // vinyl stock (no size variants)
