@@ -5,7 +5,7 @@ import { jwtVerify } from 'jose';
 const getSecret = () =>
   new TextEncoder().encode(process.env.ADMIN_JWT_SECRET ?? 'fallback-secret-change-me');
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith('/admin')) return NextResponse.next();
