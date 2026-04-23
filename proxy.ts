@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
 
   if (!pathname.startsWith('/admin')) return NextResponse.next();
 
-  // Allow the login page through
   if (pathname === '/admin') return NextResponse.next();
 
   const token = request.cookies.get('admin_token')?.value;
