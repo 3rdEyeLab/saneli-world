@@ -6,11 +6,11 @@ export const products: Product[] = [
     name: 'SANELi Crown Tee — Black',
     price: 45,
     category: 'tshirt',
-    image: '/products/tshirt-01.jpg', // swap to real mockup when ready
+    image: '/products/tshirt-01.jpg',
+    image_url: '/products/tshirt-01.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Premium heavyweight tee with SANELi crown logo.',
     badge: 'NEW',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
   {
     id: 'tshirt-002',
@@ -18,9 +18,9 @@ export const products: Product[] = [
     price: 45,
     category: 'tshirt',
     image: '/products/tshirt-02.jpg',
+    image_url: '/products/tshirt-02.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Clean white heavyweight tee, Brooklyn edition.',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
   {
     id: 'tshirt-003',
@@ -28,9 +28,9 @@ export const products: Product[] = [
     price: 45,
     category: 'tshirt',
     image: '/products/tshirt-03.jpg',
+    image_url: '/products/tshirt-03.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     description: 'Charcoal tee featuring the mic & equalizer graphic.',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
   {
     id: 'vinyl-001',
@@ -38,9 +38,9 @@ export const products: Product[] = [
     price: 35,
     category: 'vinyl',
     image: '/products/vinyl-01.jpg',
+    image_url: '/products/vinyl-01.jpg',
     description: 'Limited edition 12" vinyl. Brooklyn pressing.',
     badge: 'LIMITED',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
   {
     id: 'vinyl-002',
@@ -48,8 +48,8 @@ export const products: Product[] = [
     price: 35,
     category: 'vinyl',
     image: '/products/vinyl-02.jpg',
+    image_url: '/products/vinyl-02.jpg',
     description: 'Limited edition 12" vinyl. Gold sleeve.',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
   {
     id: 'vinyl-003',
@@ -57,8 +57,8 @@ export const products: Product[] = [
     price: 50,
     category: 'vinyl',
     image: '/products/vinyl-03.jpg',
+    image_url: '/products/vinyl-03.jpg',
     description: 'Premium crown edition 12" vinyl, hand-numbered.',
     badge: 'LIMITED',
-    // stripeLink: 'https://buy.stripe.com/YOUR_LINK_HERE',
   },
 ];
