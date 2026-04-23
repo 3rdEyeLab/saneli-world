@@ -37,7 +37,7 @@ export default function CartDrawer() {
       window.location.href = data.url;
     } else {
       setCheckingOut(false);
-      alert('Checkout failed. Please try again.');
+      alert(data.error || 'Checkout failed. Please try again.');
     }
   };
 
