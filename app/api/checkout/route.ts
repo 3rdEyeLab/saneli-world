@@ -51,28 +51,34 @@ export async function POST(req: NextRequest) {
     quantity: item.quantity,
   }));
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    line_items: lineItems,
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
-    shipping_address_collection: {
-      allowed_countries: ['US', 'CA', 'GB', 'AU'],
-    },
-    metadata: {
-      discount_code: validatedCode ?? '',
-      discount_percent: String(discountPercent),
-      items: JSON.stringify(
-        items.map(item => ({
-          productId: item.product.id,
-          productName: item.product.name,
-          size: item.size ?? null,
-          quantity: item.quantity,
-          price: item.product.price,
-        }))
-      ),
-    },
-  });
+  let session;
+  try {
+    session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: lineItems,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA', 'GB', 'AU'],
+      },
+      metadata: {
+        discount_code: validatedCode ?? '',
+        discount_percent: String(discountPercent),
+        items: JSON.stringify(
+          items.map(item => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            size: item.size ?? null,
+            quantity: item.quantity,
+            price: item.product.price,
+          }))
+        ),
+      },
+    });
+  } catch (err) {
+    console.error('Stripe session error:', err);
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
+  }
 
   return NextResponse.json({ url: session.url });
 }
