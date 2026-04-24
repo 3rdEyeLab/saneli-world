@@ -25,7 +25,6 @@ export default function NewsletterSection() {
       .from('products')
       .select('*')
       .contains('category', ['subscription'])
-      .eq('active', true)
       .limit(1)
       .maybeSingle()
       .then(({ data }) => {
