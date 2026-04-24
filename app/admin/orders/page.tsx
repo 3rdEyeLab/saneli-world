@@ -37,19 +37,16 @@ export default function AdminOrders() {
 
   return (
     <AdminShell>
-      <div className="p-8">
-        <h1 className="font-heading text-3xl tracking-widest uppercase mb-6">Orders</h1>
+      <div className="p-4 md:p-8">
+        <h1 className="font-heading text-2xl md:text-3xl tracking-widest uppercase mb-5">Orders</h1>
 
         {/* Filter tabs */}
-        <div className="flex gap-0 mb-6 overflow-x-auto">
+        <div className="flex gap-0 mb-6 overflow-x-auto pb-1">
           {STATUSES.map(s => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`font-heading text-[10px] tracking-[0.25em] uppercase px-4 py-2 border-y border-r first:border-l transition-colors whitespace-nowrap ${
+            <button key={s} onClick={() => setFilter(s)}
+              className={`font-heading text-[10px] tracking-[0.2em] uppercase px-3 py-2 border-y border-r first:border-l transition-colors whitespace-nowrap ${
                 filter === s ? 'bg-gold text-charcoal border-gold' : 'border-white/10 text-white/40 hover:text-white'
-              }`}
-            >
+              }`}>
               {s}
             </button>
           ))}
@@ -60,61 +57,89 @@ export default function AdminOrders() {
         ) : orders.length === 0 ? (
           <p className="font-body text-white/30 text-sm">No orders found.</p>
         ) : (
-          <div className="bg-white/5 border border-white/10 overflow-x-auto">
-            <table className="w-full min-w-[700px]">
-              <thead>
-                <tr className="border-b border-white/10">
-                  {['Order', 'Customer', 'Items', 'Total', 'Status', 'Date'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 font-heading text-[10px] tracking-[0.25em] text-white/40 uppercase">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map(order => (
-                  <tr key={order.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
-                    <td className="px-4 py-3 font-body text-xs text-white/60">
-                      #{order.id.slice(0, 8).toUpperCase()}
-                    </td>
-                    <td className="px-4 py-3 font-body text-xs text-white">
-                      {order.customer_email}
+          <>
+            {/* Mobile: card layout */}
+            <div className="flex flex-col gap-3 md:hidden">
+              {orders.map(order => (
+                <div key={order.id} className="bg-white/5 border border-white/10 p-4">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="min-w-0">
+                      <p className="font-body text-xs text-white/60 mb-0.5">#{order.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="font-body text-sm text-white truncate">{order.customer_email}</p>
                       {order.customer_name && (
-                        <p className="text-white/40">{order.customer_name}</p>
+                        <p className="font-body text-xs text-white/40">{order.customer_name}</p>
                       )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {order.order_items?.map((item, i) => (
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-body text-sm text-white font-medium">${Number(order.total).toFixed(2)}</p>
+                      <p className="font-body text-xs text-white/40">{new Date(order.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  {order.order_items?.length ? (
+                    <div className="mb-3 border-t border-white/5 pt-3">
+                      {order.order_items.map((item, i) => (
                         <p key={i} className="font-body text-xs text-white/60">
                           {item.product_name}{item.size ? ` / ${item.size}` : ''} × {item.quantity}
                         </p>
                       ))}
-                    </td>
-                    <td className="px-4 py-3 font-body text-sm text-white font-medium">
-                      ${Number(order.total).toFixed(2)}
-                      {order.discount_code && (
-                        <p className="text-[10px] text-gold font-heading tracking-wider">{order.discount_code}</p>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={order.status}
-                        onChange={e => updateStatus(order.id, e.target.value)}
-                        className={`bg-transparent border border-white/10 font-heading text-[10px] tracking-wider uppercase px-2 py-1 cursor-pointer focus:outline-none ${STATUS_COLORS[order.status] ?? 'text-white'}`}
-                      >
-                        {['pending','paid','processing','shipped','delivered','cancelled','refunded'].map(s => (
-                          <option key={s} value={s} className="bg-[#0d0d0d] text-white">{s.toUpperCase()}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-3 font-body text-xs text-white/40">
-                      {new Date(order.created_at).toLocaleDateString()}
-                    </td>
+                    </div>
+                  ) : null}
+                  <select value={order.status} onChange={e => updateStatus(order.id, e.target.value)}
+                    className={`w-full bg-white/5 border border-white/10 font-heading text-[10px] tracking-wider uppercase px-3 py-2 cursor-pointer focus:outline-none ${STATUS_COLORS[order.status] ?? 'text-white'}`}>
+                    {['pending','paid','processing','shipped','delivered','cancelled','refunded'].map(s => (
+                      <option key={s} value={s} className="bg-[#0d0d0d] text-white">{s.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block bg-white/5 border border-white/10 overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    {['Order', 'Customer', 'Items', 'Total', 'Status', 'Date'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 font-heading text-[10px] tracking-[0.25em] text-white/40 uppercase">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {orders.map(order => (
+                    <tr key={order.id} className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+                      <td className="px-4 py-3 font-body text-xs text-white/60">#{order.id.slice(0, 8).toUpperCase()}</td>
+                      <td className="px-4 py-3 font-body text-xs text-white">
+                        {order.customer_email}
+                        {order.customer_name && <p className="text-white/40">{order.customer_name}</p>}
+                      </td>
+                      <td className="px-4 py-3">
+                        {order.order_items?.map((item, i) => (
+                          <p key={i} className="font-body text-xs text-white/60">
+                            {item.product_name}{item.size ? ` / ${item.size}` : ''} × {item.quantity}
+                          </p>
+                        ))}
+                      </td>
+                      <td className="px-4 py-3 font-body text-sm text-white font-medium">
+                        ${Number(order.total).toFixed(2)}
+                        {order.discount_code && <p className="text-[10px] text-gold font-heading tracking-wider">{order.discount_code}</p>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <select value={order.status} onChange={e => updateStatus(order.id, e.target.value)}
+                          className={`bg-transparent border border-white/10 font-heading text-[10px] tracking-wider uppercase px-2 py-1 cursor-pointer focus:outline-none ${STATUS_COLORS[order.status] ?? 'text-white'}`}>
+                          {['pending','paid','processing','shipped','delivered','cancelled','refunded'].map(s => (
+                            <option key={s} value={s} className="bg-[#0d0d0d] text-white">{s.toUpperCase()}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 font-body text-xs text-white/40">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </AdminShell>
