@@ -50,7 +50,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   );
 
   return (
-    <div className="flex min-h-screen bg-[#0d0d0d] text-white">
+    <div className="flex min-h-screen bg-[#0d0d0d] text-white overflow-x-hidden">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-56 bg-black border-r border-white/5 flex-col shrink-0">
         <NavContent />
@@ -68,7 +68,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       )}
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-0">
         {/* Mobile topbar */}
         <div className="md:hidden flex items-center justify-between px-4 py-4 border-b border-white/5 bg-black">
           <button onClick={() => setOpen(true)} className="text-white/60 hover:text-white p-1">
