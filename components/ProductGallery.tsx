@@ -6,15 +6,14 @@ import { supabase } from '@/lib/supabase';
 import ProductCard from './ProductCard';
 import type { Product } from '@/types';
 
-type Filter = 'all' | 'tshirt' | 'vinyl' | 'cassette' | 'music' | 'subscription';
+type Filter = 'all' | 'tshirt' | 'vinyl' | 'cassette' | 'music';
 
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all',          label: 'ALL' },
-  { key: 'tshirt',       label: 'TEES' },
-  { key: 'vinyl',        label: 'VINYL' },
-  { key: 'cassette',     label: 'CASSETTES' },
-  { key: 'music',        label: 'MUSIC' },
-  { key: 'subscription', label: 'EARLY ACCESS' },
+  { key: 'all',      label: 'ALL' },
+  { key: 'tshirt',   label: 'TEES' },
+  { key: 'vinyl',    label: 'VINYL' },
+  { key: 'cassette', label: 'CASSETTES' },
+  { key: 'music',    label: 'MUSIC' },
 ];
 
 const hasCategory = (product: Product, filter: Filter): boolean => {
