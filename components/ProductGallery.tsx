@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { products as staticProducts } from '@/data/products';
 import { supabase } from '@/lib/supabase';
 import ProductCard from './ProductCard';
@@ -8,8 +8,7 @@ import type { Product } from '@/types';
 
 type Filter = 'all' | 'tshirt' | 'vinyl' | 'cassette' | 'music';
 
-const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all',      label: 'ALL' },
+const ALL_FILTERS: { key: Filter; label: string }[] = [
   { key: 'tshirt',   label: 'TEES' },
   { key: 'vinyl',    label: 'VINYL' },
   { key: 'cassette', label: 'CASSETTES' },
@@ -51,6 +50,11 @@ export default function ProductGallery() {
     load();
   }, []);
 
+  const visibleFilters = useMemo(() => {
+    const used = ALL_FILTERS.filter(f => products.some(p => hasCategory(p, f.key)));
+    return used.length > 1 ? [{ key: 'all' as Filter, label: 'ALL' }, ...used] : used;
+  }, [products]);
+
   const filtered = filter === 'all' ? products : products.filter(p => hasCategory(p, filter));
 
   return (
@@ -66,7 +70,7 @@ export default function ProductGallery() {
           <div className="w-10 h-px bg-gold mx-auto mb-10" />
 
           <div className="inline-flex flex-wrap justify-center">
-            {FILTERS.map(({ key, label }) => (
+            {visibleFilters.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
