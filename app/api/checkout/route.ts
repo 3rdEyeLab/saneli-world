@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
       shipping_address_collection: {
         allowed_countries: ['US', 'CA', 'GB', 'AU'],
       },
+      automatic_tax: { enabled: true },
       metadata: {
         discount_code: validatedCode ?? '',
         discount_percent: String(discountPercent),
