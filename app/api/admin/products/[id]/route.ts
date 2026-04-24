@@ -70,7 +70,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const { error } = await supabaseAdmin
     .from('products')
-    .update({ active: false })
+    .delete()
     .eq('id', id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

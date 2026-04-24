@@ -65,6 +65,8 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadingExtra, setUploadingExtra] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState('');
 
   const uploadFile = async (file: File): Promise<string | null> => {
@@ -317,7 +319,7 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
 
       {error && <p className="font-body text-xs text-red-400">{error}</p>}
 
-      <div className="flex gap-4 pt-2">
+      <div className="flex flex-wrap gap-4 pt-2">
         <button type="submit" disabled={saving}
           className="bg-gold text-charcoal font-heading text-xs tracking-[0.3em] uppercase px-8 py-3 hover:opacity-90 transition-opacity disabled:opacity-40">
           {saving ? 'SAVING...' : isEdit ? 'SAVE CHANGES' : 'CREATE PRODUCT'}
@@ -326,6 +328,34 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
           className="font-heading text-xs tracking-[0.2em] uppercase text-white/40 hover:text-white transition-colors">
           CANCEL
         </button>
+
+        {isEdit && (
+          <div className="ml-auto">
+            {!confirmDelete ? (
+              <button type="button" onClick={() => setConfirmDelete(true)}
+                className="font-heading text-xs tracking-[0.2em] uppercase text-red-500/50 hover:text-red-500 transition-colors">
+                DELETE PRODUCT
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="font-body text-xs text-red-400">Are you sure?</span>
+                <button type="button" disabled={deleting}
+                  onClick={async () => {
+                    setDeleting(true);
+                    await fetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
+                    router.push('/admin/products');
+                  }}
+                  className="font-heading text-xs tracking-wider uppercase text-red-500 border border-red-500/50 px-3 py-1 hover:bg-red-500/10 transition-colors disabled:opacity-40">
+                  {deleting ? 'DELETING...' : 'YES, DELETE'}
+                </button>
+                <button type="button" onClick={() => setConfirmDelete(false)}
+                  className="font-heading text-xs tracking-wider uppercase text-white/40 hover:text-white transition-colors">
+                  CANCEL
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </form>
   );
