@@ -13,9 +13,10 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { label: 'SHOP', id: 'shop' },
-    { label: 'MUSIC', id: 'music' },
-    { label: 'ABOUT', id: 'about' },
+    { label: 'SHOP',         id: 'shop' },
+    { label: 'EARLY ACCESS', id: 'newsletter' },
+    { label: 'MUSIC',        id: 'music' },
+    { label: 'ABOUT',        id: 'about' },
   ];
 
   return (
