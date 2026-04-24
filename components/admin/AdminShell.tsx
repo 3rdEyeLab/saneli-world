@@ -5,9 +5,10 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 const navItems = [
-  { label: 'DASHBOARD', href: '/admin/dashboard' },
-  { label: 'PRODUCTS',  href: '/admin/products' },
-  { label: 'ORDERS',    href: '/admin/orders' },
+  { label: 'DASHBOARD',   href: '/admin/dashboard' },
+  { label: 'PRODUCTS',    href: '/admin/products' },
+  { label: 'ORDERS',      href: '/admin/orders' },
+  { label: 'SUBSCRIBERS', href: '/admin/subscribers' },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

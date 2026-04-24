@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const meta = session.metadata ?? {};
-  const rawItems: { productId: string; productName: string; size: string | null; quantity: number; price: number }[] =
+  const rawItems: { productId: string; productName: string; category?: string | string[]; size: string | null; quantity: number; price: number }[] =
     JSON.parse(meta.items ?? '[]');
   const discountCode = meta.discount_code || null;
   const discountPercent = parseInt(meta.discount_percent ?? '0', 10);
@@ -109,6 +109,32 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Increment discount code usage
   if (discountCode) {
     await supabaseAdmin.rpc('increment_discount_uses', { p_code: discountCode });
+  }
+
+  // Add subscription buyers to early access list
+  const customerEmail = session.customer_details?.email;
+  const hasSubscription = rawItems.some(item => {
+    const cats = Array.isArray(item.category) ? item.category : [item.category ?? ''];
+    return cats.includes('subscription');
+  });
+  if (hasSubscription && customerEmail) {
+    const { data: existing } = await supabaseAdmin
+      .from('newsletter_subscribers')
+      .select('id, list_type')
+      .eq('email', customerEmail)
+      .maybeSingle();
+
+    if (existing) {
+      const newType = existing.list_type === 'newsletter' ? 'both' : 'early_access';
+      await supabaseAdmin
+        .from('newsletter_subscribers')
+        .update({ list_type: newType, active: true })
+        .eq('id', existing.id);
+    } else {
+      await supabaseAdmin
+        .from('newsletter_subscribers')
+        .insert({ email: customerEmail, list_type: 'early_access', active: true });
+    }
   }
 
   // Send confirmation email

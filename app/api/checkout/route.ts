@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
           items.map(item => ({
             productId: item.product.id,
             productName: item.product.name,
+            category: item.product.category,
             size: item.size ?? null,
             quantity: item.quantity,
             price: item.product.price,

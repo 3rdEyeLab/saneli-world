@@ -40,10 +40,11 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
   };
 
   const CATEGORY_OPTIONS = [
-    { value: 'tshirt',   label: 'T-Shirt' },
-    { value: 'vinyl',    label: 'Vinyl' },
-    { value: 'cassette', label: 'Cassette' },
-    { value: 'music',    label: 'Music' },
+    { value: 'tshirt',       label: 'T-Shirt' },
+    { value: 'vinyl',        label: 'Vinyl' },
+    { value: 'cassette',     label: 'Cassette' },
+    { value: 'music',        label: 'Music' },
+    { value: 'subscription', label: 'Subscription' },
   ];
 
   const [sizes, setSizes] = useState<ProductSize[]>(
