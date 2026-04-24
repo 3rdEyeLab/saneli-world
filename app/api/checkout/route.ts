@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     price_data: {
       currency: 'usd',
       product_data: {
-        name: item.product.name + (item.size ? ` / ${item.size}` : ''),
+        name: item.product.name + (item.color ? ` / ${item.color}` : '') + (item.size ? ` / ${item.size}` : ''),
         ...(discountPercent > 0 && {
           description: `Code: ${validatedCode} — ${discountPercent}% off`,
         }),

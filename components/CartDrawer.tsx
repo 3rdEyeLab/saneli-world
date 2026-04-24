@@ -85,10 +85,10 @@ export default function CartDrawer() {
             <div className="flex flex-col divide-y divide-gray-100">
               {items.map(item => (
                 <CartItemRow
-                  key={`${item.product.id}-${item.size}`}
+                  key={`${item.product.id}-${item.size}-${item.color}`}
                   item={item}
-                  onRemove={() => removeItem(item.product.id, item.size)}
-                  onUpdateQty={qty => updateQuantity(item.product.id, qty, item.size)}
+                  onRemove={() => removeItem(item.product.id, item.size, item.color)}
+                  onUpdateQty={qty => updateQuantity(item.product.id, qty, item.size, item.color)}
                 />
               ))}
             </div>
@@ -188,6 +188,7 @@ function CartItemRow({ item, onRemove, onUpdateQty }: {
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-heading text-xs tracking-widest uppercase text-black truncate">{item.product.name}</p>
+        {item.color && <p className="font-body text-xs text-gray-400 mt-0.5">Color: {item.color}</p>}
         {item.size && <p className="font-body text-xs text-gray-400 mt-0.5">Size: {item.size}</p>}
         <p className="font-body text-xs font-medium text-black mt-1">
           ${(item.product.price * item.quantity).toFixed(2)}

@@ -7,46 +7,54 @@ import type { Product } from '@/types';
 
 export default function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+
+  const allImages = buildImageList(product);
+  const [activeImg, setActiveImg] = useState(0);
+  const [imgError, setImgError] = useState<Record<number, boolean>>({});
+
   const [selectedSize, setSelectedSize] = useState<string | undefined>(
     product.product_sizes?.[1]?.size ?? product.sizes?.[1]
   );
-  const [imgError, setImgError] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(
+    product.product_colors?.[0]?.color_name
+  );
   const [added, setAdded] = useState(false);
   const [showNotify, setShowNotify] = useState(false);
 
-  // Determine stock for selected size or product
-  const getStock = (size?: string): number => {
-    if (product.product_sizes?.length) {
-      const s = product.product_sizes.find(ps => ps.size === size);
+  const getStock = (): number => {
+    if (product.product_colors?.length && selectedColor) {
+      const c = product.product_colors.find(c => c.color_name === selectedColor);
+      if (c) return c.stock;
+    }
+    if (product.product_sizes?.length && selectedSize) {
+      const s = product.product_sizes.find(ps => ps.size === selectedSize);
       return s?.stock ?? 0;
     }
     return product.stock ?? 999;
   };
 
-  const selectedStock = getStock(selectedSize);
+  const selectedStock = getStock();
   const isSoldOut = selectedStock === 0;
   const isLowStock = selectedStock > 0 && selectedStock <= 4;
 
-  const imgSrc = product.image_url || product.image || '';
-
   const handleAdd = () => {
     if (isSoldOut) return;
-    addItem(product, selectedSize);
+    addItem(product, selectedSize, selectedColor);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
 
-  // Build size list from either DB or static data
-  const sizeList: { size: string; stock: number }[] =
-    product.product_sizes?.length
-      ? product.product_sizes
-      : (product.sizes?.map(s => ({ size: s, stock: 999 })) ?? []);
+  const sizeList = product.product_sizes?.length
+    ? product.product_sizes
+    : (product.sizes?.map(s => ({ size: s, stock: 999 })) ?? []);
+
+  const currentImgSrc = allImages[activeImg] ?? '';
 
   return (
     <>
       <div className="group flex flex-col">
-        {/* Image */}
-        <div className="relative aspect-square bg-gray-50 overflow-hidden mb-4">
+        {/* Main image */}
+        <div className="relative aspect-square bg-gray-50 overflow-hidden mb-2">
           {product.badge && (
             <span className="absolute top-3 left-3 z-10 bg-charcoal text-white font-heading text-[10px] tracking-[0.25em] px-2.5 py-1 uppercase">
               {product.badge}
@@ -57,17 +65,39 @@ export default function ProductCard({ product }: { product: Product }) {
               <span className="font-heading text-xs tracking-[0.4em] text-black uppercase">Sold Out</span>
             </div>
           )}
-          {!imgError && imgSrc ? (
+          {currentImgSrc && !imgError[activeImg] ? (
             <img
-              src={imgSrc}
+              src={currentImgSrc}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              onError={() => setImgError(true)}
+              onError={() => setImgError(e => ({ ...e, [activeImg]: true }))}
             />
           ) : (
             <PlaceholderImage category={product.category} />
           )}
         </div>
+
+        {/* Thumbnail strip */}
+        {allImages.length > 1 && (
+          <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5">
+            {allImages.map((src, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveImg(i)}
+                className={`flex-shrink-0 w-12 h-12 overflow-hidden border transition-colors ${
+                  activeImg === i ? 'border-charcoal' : 'border-gray-200 hover:border-gray-400'
+                }`}
+              >
+                {src && !imgError[i] ? (
+                  <img src={src} alt="" className="w-full h-full object-cover"
+                    onError={() => setImgError(e => ({ ...e, [i]: true }))} />
+                ) : (
+                  <div className="w-full h-full bg-gray-100" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Info */}
         <div className="flex flex-col gap-2.5">
@@ -79,6 +109,33 @@ export default function ProductCard({ product }: { product: Product }) {
               ${Number(product.price).toFixed(2)}
             </span>
           </div>
+
+          {/* Color swatches */}
+          {product.product_colors && product.product_colors.length > 0 && (
+            <div className="flex gap-2 flex-wrap items-center">
+              {product.product_colors.map(c => (
+                <button
+                  key={c.color_name}
+                  title={c.color_name}
+                  onClick={() => setSelectedColor(c.color_name)}
+                  disabled={c.stock === 0}
+                  className={`w-6 h-6 rounded-full border-2 transition-all duration-150 ${
+                    c.stock === 0
+                      ? 'opacity-30 cursor-not-allowed'
+                      : selectedColor === c.color_name
+                        ? 'border-charcoal scale-110'
+                        : 'border-gray-200 hover:border-gray-500'
+                  }`}
+                  style={{ backgroundColor: c.color_hex }}
+                />
+              ))}
+              {selectedColor && (
+                <span className="font-heading text-[10px] tracking-wider text-gray-500 uppercase">
+                  {selectedColor}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Sizes */}
           {sizeList.length > 0 && (
@@ -108,7 +165,6 @@ export default function ProductCard({ product }: { product: Product }) {
             </p>
           )}
 
-          {/* CTA */}
           {isSoldOut ? (
             <button
               onClick={() => setShowNotify(true)}
@@ -139,6 +195,17 @@ export default function ProductCard({ product }: { product: Product }) {
       )}
     </>
   );
+}
+
+function buildImageList(product: Product): string[] {
+  const imgs: string[] = [];
+  if (product.product_images?.length) {
+    const sorted = [...product.product_images].sort((a, b) => a.sort_order - b.sort_order);
+    sorted.forEach(i => { if (i.url) imgs.push(i.url); });
+  }
+  const primary = product.image_url || product.image || '';
+  if (primary && !imgs.includes(primary)) imgs.unshift(primary);
+  return imgs;
 }
 
 function PlaceholderImage({ category }: { category: 'tshirt' | 'vinyl' }) {

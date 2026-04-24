@@ -28,7 +28,7 @@ export default function ProductGallery() {
       try {
         const { data, error } = await supabase
           .from('products')
-          .select('*, product_sizes(size, stock)')
+          .select('*, product_sizes(size, stock), product_colors(id, color_name, color_hex, stock), product_images(id, url, sort_order)')
           .eq('active', true)
           .order('created_at', { ascending: false });
 

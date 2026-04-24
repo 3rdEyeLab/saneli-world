@@ -3,6 +3,19 @@ export interface ProductSize {
   stock: number;
 }
 
+export interface ProductColor {
+  id?: string;
+  color_name: string;
+  color_hex: string;
+  stock: number;
+}
+
+export interface ProductImage {
+  id?: string;
+  url: string;
+  sort_order: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -12,9 +25,11 @@ export interface Product {
   image_url?: string;
   badge?: string;
   active?: boolean;
-  stock?: number;           // vinyl stock (no size variants)
-  product_sizes?: ProductSize[]; // tshirt sizes + stock from Supabase
-  // legacy field for static data compatibility
+  stock?: number;
+  product_sizes?: ProductSize[];
+  product_colors?: ProductColor[];
+  product_images?: ProductImage[];
+  // legacy fields for static data compatibility
   image?: string;
   sizes?: string[];
 }
@@ -23,6 +38,7 @@ export interface CartItem {
   product: Product;
   quantity: number;
   size?: string;
+  color?: string;
 }
 
 export interface DiscountCode {
