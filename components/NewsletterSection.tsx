@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
-import { supabase } from '@/lib/supabase';
 import type { Product } from '@/types';
 
 type ListType = 'newsletter' | 'early_access';
@@ -19,15 +18,10 @@ export default function NewsletterSection() {
 
   useEffect(() => {
     if (listType !== 'early_access' || earlyProduct) return;
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) return;
     setProductLoading(true);
-    supabase
-      .from('products')
-      .select('*')
-      .contains('category', ['subscription'])
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
+    fetch('/api/early-access')
+      .then(r => r.json())
+      .then(data => {
         if (data) setEarlyProduct(data as Product);
         setProductLoading(false);
       });
