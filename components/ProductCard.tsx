@@ -73,7 +73,7 @@ export default function ProductCard({ product }: { product: Product }) {
               onError={() => setImgError(e => ({ ...e, [activeImg]: true }))}
             />
           ) : (
-            <PlaceholderImage category={product.category} />
+            <PlaceholderImage category={Array.isArray(product.category) ? product.category[0] : product.category} />
           )}
         </div>
 
@@ -197,6 +197,11 @@ export default function ProductCard({ product }: { product: Product }) {
   );
 }
 
+export function hasCategory(product: Product, cat: string): boolean {
+  const cats = Array.isArray(product.category) ? product.category : [product.category];
+  return cats.includes(cat);
+}
+
 function buildImageList(product: Product): string[] {
   const imgs: string[] = [];
   if (product.product_images?.length) {
@@ -208,7 +213,7 @@ function buildImageList(product: Product): string[] {
   return imgs;
 }
 
-function PlaceholderImage({ category }: { category: 'tshirt' | 'vinyl' }) {
+function PlaceholderImage({ category }: { category: string }) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 gap-4">
       {category === 'tshirt' ? (

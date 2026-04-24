@@ -21,7 +21,7 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  category: 'tshirt' | 'vinyl';
+  category: string | string[];
   image_url?: string;
   badge?: string;
   active?: boolean;

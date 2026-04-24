@@ -6,13 +6,20 @@ import { supabase } from '@/lib/supabase';
 import ProductCard from './ProductCard';
 import type { Product } from '@/types';
 
-type Filter = 'all' | 'tshirt' | 'vinyl';
+type Filter = 'all' | 'tshirt' | 'vinyl' | 'cassette' | 'music';
 
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all',    label: 'ALL' },
-  { key: 'tshirt', label: 'TEES' },
-  { key: 'vinyl',  label: 'VINYL' },
+  { key: 'all',      label: 'ALL' },
+  { key: 'tshirt',   label: 'TEES' },
+  { key: 'vinyl',    label: 'VINYL' },
+  { key: 'cassette', label: 'CASSETTES' },
+  { key: 'music',    label: 'MUSIC' },
 ];
+
+const hasCategory = (product: Product, filter: Filter): boolean => {
+  const cats = Array.isArray(product.category) ? product.category : [product.category];
+  return cats.includes(filter);
+};
 
 export default function ProductGallery() {
   const [products, setProducts] = useState<Product[]>(staticProducts as Product[]);
@@ -21,7 +28,7 @@ export default function ProductGallery() {
 
   useEffect(() => {
     const load = async () => {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) {
         setLoading(false);
         return;
       }
@@ -36,7 +43,7 @@ export default function ProductGallery() {
           setProducts(data as Product[]);
         }
       } catch {
-        // Fall back to static data silently
+        // fall back to static data
       } finally {
         setLoading(false);
       }
@@ -44,13 +51,11 @@ export default function ProductGallery() {
     load();
   }, []);
 
-  const filtered =
-    filter === 'all' ? products : products.filter(p => p.category === filter);
+  const filtered = filter === 'all' ? products : products.filter(p => hasCategory(p, filter));
 
   return (
     <section id="shop" className="py-20 px-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-14">
           <p className="font-heading text-xs tracking-[0.5em] text-gold uppercase mb-3">
             SANELi BROOKLYN NY
@@ -60,12 +65,12 @@ export default function ProductGallery() {
           </h2>
           <div className="w-10 h-px bg-gold mx-auto mb-10" />
 
-          <div className="inline-flex">
+          <div className="inline-flex flex-wrap justify-center">
             {FILTERS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setFilter(key)}
-                className={`font-heading text-xs tracking-[0.3em] px-8 py-3 border-y border-r first:border-l transition-all duration-200 ${
+                className={`font-heading text-xs tracking-[0.3em] px-6 py-3 border-y border-r first:border-l transition-all duration-200 ${
                   filter === key
                     ? 'bg-charcoal text-white border-charcoal'
                     : 'bg-white text-black border-gray-200 hover:border-gray-400'
@@ -77,7 +82,6 @@ export default function ProductGallery() {
           </div>
         </div>
 
-        {/* Grid */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
             {[...Array(6)].map((_, i) => (

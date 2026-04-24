@@ -21,12 +21,30 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
     name: initial?.name ?? '',
     description: initial?.description ?? '',
     price: initial?.price?.toString() ?? '',
-    category: (initial?.category ?? 'tshirt') as 'tshirt' | 'vinyl',
     image_url: initial?.image_url ?? '',
     badge: initial?.badge ?? '',
     active: initial?.active ?? true,
     stock: initial?.stock?.toString() ?? '0',
   });
+
+  const [categories, setCategories] = useState<string[]>(
+    initial?.category
+      ? (Array.isArray(initial.category) ? initial.category : [initial.category])
+      : ['tshirt']
+  );
+
+  const toggleCategory = (cat: string) => {
+    setCategories(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const CATEGORY_OPTIONS = [
+    { value: 'tshirt',   label: 'T-Shirt' },
+    { value: 'vinyl',    label: 'Vinyl' },
+    { value: 'cassette', label: 'Cassette' },
+    { value: 'music',    label: 'Music' },
+  ];
 
   const [sizes, setSizes] = useState<ProductSize[]>(
     initial?.product_sizes?.length
@@ -104,9 +122,10 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
 
     const payload = {
       ...form,
+      category: categories,
       price: parseFloat(form.price),
       stock: parseInt(form.stock, 10),
-      sizes: form.category === 'tshirt' ? sizes : undefined,
+      sizes: categories.includes('tshirt') ? sizes : undefined,
       colors: colors.filter(c => c.color_name.trim()),
       images,
     };
@@ -202,13 +221,20 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
             onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
             className={inputCls} placeholder="45.00" />
         </Field>
-        <Field label="Category" required>
-          <select value={form.category}
-            onChange={e => setForm(f => ({ ...f, category: e.target.value as 'tshirt' | 'vinyl' }))}
-            className={`${inputCls} cursor-pointer`}>
-            <option value="tshirt">T-Shirt</option>
-            <option value="vinyl">Vinyl</option>
-          </select>
+        <Field label="Categories" required>
+          <div className="flex flex-wrap gap-3 pt-1">
+            {CATEGORY_OPTIONS.map(({ value, label }) => (
+              <label key={value} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={categories.includes(value)}
+                  onChange={() => toggleCategory(value)}
+                  className="accent-gold w-4 h-4"
+                />
+                <span className="font-heading text-xs tracking-wider text-white/70 uppercase">{label}</span>
+              </label>
+            ))}
+          </div>
         </Field>
       </div>
 
@@ -229,7 +255,7 @@ export default function ProductForm({ initial, productId }: ProductFormProps) {
       </div>
 
       {/* Sizes */}
-      {form.category === 'tshirt' ? (
+      {categories.includes('tshirt') ? (
         <div>
           <label className="block font-heading text-[10px] tracking-[0.3em] text-white/40 uppercase mb-3">
             Sizes &amp; Stock
